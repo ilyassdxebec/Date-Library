@@ -89,6 +89,21 @@ public:
 		return DateToString(*this);
 	}
 
+	static void SwapDates(clsDate &Date1 ,clsDate &Date2)
+	{
+
+		clsDate TempDate;
+
+		TempDate = Date1;
+		Date1 = Date2;
+		Date2 = TempDate;
+	}
+
+	void SwapDates(clsDate &Date2)
+	{
+		SwapDates(*this ,Date2);
+	}
+
 	double DaysInYear()
 	{
 		return DaysInYear(_Year);
@@ -686,6 +701,53 @@ public:
 	void SetYear(const short& Year)
 	{
 		_Year = Year;
+	}
+
+	static clsDate GetSystemDate()
+	{
+		clsDate Date;
+
+		time_t now = time(0);
+		tm* ltm = localtime(&now);
+
+		Date._Day = ltm->tm_mday;
+		Date._Month = 1 + ltm->tm_mon;
+		Date._Year = 1900 + ltm->tm_year;
+
+		return Date;
+	}
+
+	static bool IsLastDayInMonth(clsDate Date)
+	{
+		return (Date._Day == DaysInMonth(Date._Year, Date._Month));
+	}
+
+	bool IsLastDayInMonth()
+	{
+		return IsLastDayInMonth(*this);
+	}
+	
+	static bool IsLastMonthInYear(const short &Month)
+	{
+		return (Month == 12);
+	}
+
+	bool IsLastMonthInYear()
+	{
+		return IsLastMonthInYear(_Month);
+	}
+
+	static void IncreaseDateByOneWeek(clsDate &Date)
+	{
+		for (int i = 1; i <= 7; i++)
+		{
+			IncreaseDateByOneDay(Date);
+		}
+	}
+
+	void IncreaseDateByOneWeek()
+	{
+		IncreaseDateByOneWeek(*this);
 	}
 
 	void Print()

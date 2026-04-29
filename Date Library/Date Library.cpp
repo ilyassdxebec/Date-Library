@@ -7,5 +7,5 @@ int main()
 {
     clsDate Date1;
 
-    Date1.PrintYearCalendar();
+    Date1.Print();
 }

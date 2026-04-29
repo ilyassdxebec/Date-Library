@@ -17,6 +17,7 @@ private:
 
 public:
 
+	enum enDateComparison { Before = -1, Equal = 0, After = 1 };
 
 	clsDate()
 	{
@@ -73,72 +74,72 @@ public:
 		}
 	}
 
-	static short DaysInYear(const short& year)
+	static double DaysInYear(const short& year)
 	{
 		return (isLeapYear(year)) ? 366 : 365;
 	}
 
-	short DaysInYear()
+	double DaysInYear()
 	{
 		return DaysInYear(_Year);
 	}
 
-	static short HoursInYear(const short& year)
+	static double HoursInYear(const short& year)
 	{
 		return DaysInYear(year) * 24;
 	}
 
-	short HoursInYear()
+	double HoursInYear()
 	{
 		return HoursInYear(_Year);
 	}
 
-	static short MinutesInYear(const short& year)
+	static double MinutesInYear(const short& year)
 	{
 		return HoursInYear(year) * 60;
 	}
 
-	short MinutesInYear()
+	double MinutesInYear()
 	{
 		return MinutesInYear(_Year);
 	}
 
-	static short SecondsInYear(const short& year)
+	static double SecondsInYear(const short& year)
 	{
 		return MinutesInYear(year) * 60;
 	}
 
-	short SecondsInYear()
+	double SecondsInYear()
 	{
 		return SecondsInYear(_Year);
 	}
 
-	static short HoursInMonth(const short& year, const short& month)
+	static double HoursInMonth(const short& year, const short& month)
 	{
 		return DaysInMonth(year, month) * 24;
 	}
 
-	short HoursInMonth()
+	double HoursInMonth()
 	{
 		return HoursInMonth(_Year, _Month);
 	}
 
-	static short MinutesInMonth(const short& year, const short& month)
+	static double MinutesInMonth(const short& year, const short& month)
 	{
 		return HoursInMonth(year, month) * 60;
 	}
 
-	short MinutesInMonth()
+	double MinutesInMonth()
 	{
 		return MinutesInMonth(_Year, _Month);
 	}
 
-	static short SecondsInMonth(const short& year, const short& month)
+	static double SecondsInMonth(const short& year, const short& month)
 	{
 		return MinutesInMonth(year, month) * 60;
 	}
 
-	short SecondsInMonth()
+	double SecondsInMonth()
 	{
 		return SecondsInMonth(_Year, _Month);
 	}
@@ -320,6 +321,297 @@ public:
 			}
 		}
 		return Date;
+	}
+
+	static void AddDaysToDate(clsDate &Date, const int &DaysToAdd)
+	{
+
+		int RemainingDays = DaysToAdd + DaysFromBeginningOfYear(Date._Year, Date._Month, Date._Day);
+		int MonthDays;
+
+		Date._Month = 1;
+
+		while (true)
+		{
+			MonthDays = DaysInMonth(Date._Year, Date._Month);
+
+			if (RemainingDays > MonthDays)
+			{
+				RemainingDays -= MonthDays;
+				Date._Month++;
+
+				if (Date._Month > 12)
+				{
+					Date._Year++;
+					Date._Month = 1;
+				}
+			}
+			else
+			{
+				Date._Day = RemainingDays;
+				break;
+			}
+		}
+	}
+
+	void AddDaysToDate(const int &DaysToAdd)
+	{
+		AddDaysToDate(*this, DaysToAdd);
+	}
+
+	static bool IsDate1BeforeDate2(const clsDate& Date1, const clsDate &Date2)
+	{
+		return (Date1._Year < Date2._Year) ? true : ((Date1._Year == Date2._Year) ? (Date1._Month < Date2._Month ? true : (Date1._Month == Date2._Month ? Date1._Day < Date2._Day : false)) : false);
+	}
+
+	bool IsBeforeDate2(const clsDate &Date2)
+	{
+		IsDate1BeforeDate2(*this, Date2);
+	}
+
+	static bool IsDate1EqualDate2(const clsDate& Date1, const clsDate& Date2)
+	{
+		return (Date1._Year == Date2._Year) ? ((Date1._Month == Date2._Month) ? ((Date1._Day == Date2._Day) ? true : false) : false) : false;
+	}
+
+	bool IsEqualToDate2(const clsDate &Date2)
+	{
+		IsDate1EqualDate2(*this, Date2);
+	}
+
+	static bool isLastDayInMonth(const clsDate &Date)
+	{
+		return DaysInMonth(Date._Year, Date._Month) == Date._Day;
+	}
+
+	bool isLastDayInMonth()
+	{
+		isLastDayInMonth(*this);
+	}
+
+	static bool isLastMonthInYear(const clsDate &Date)
+	{
+		return Date._Month == 12;
+	}
+
+	bool isLastMonthInYear()
+	{
+		return isLastMonthInYear(*this);
+	}
+
+	static void IncreaseDateByOneDay(clsDate &Date)
+	{
+
+		if (isLastDayInMonth(Date))
+		{
+			Date._Day = 1;
+
+			if (isLastMonthInYear(Date))
+			{
+				Date._Month = 1;
+				Date._Year++;
+			}
+			else
+			{
+				Date._Month++;
+			}
+		}
+		else
+		{
+			Date._Day++;
+		}
+	}
+
+	void IncreaseDateByOneDay()
+	{
+		IncreaseDateByOneDay(*this);
+	}
+
+	static int DaysBetweenTwoDates(clsDate Date1, clsDate Date2)
+	{
+
+		if (!IsDate1BeforeDate2(Date1, Date2))
+		{
+
+			cout << "\nYou cannot do that since Date1 is not Before Date2!\n";
+			return 0;
+
+		}
+
+		if (Date1._Year == Date2._Year)
+		{
+			return (DaysFromBeginningOfYear(Date2._Year, Date2._Month, Date2._Day) - DaysFromBeginningOfYear(Date1._Year, Date1._Month, Date1._Day));
+		}
+
+		int DaysBetween = 0;
+
+		while (true)
+		{
+
+			DaysBetween += DaysInYear(Date2._Year);
+			Date2._Year--;
+
+			if (Date1._Year == Date2._Year)
+			{
+				return (DaysFromBeginningOfYear(Date2._Year, Date2._Month, Date2._Day) - DaysFromBeginningOfYear(Date1._Year, Date1._Month, Date1._Day)) + DaysBetween;
+			}
+		}
+	}
+
+	int DaysBetweenTwoDates(clsDate Date2)
+	{
+		return DaysBetweenTwoDates(*this, Date2);
+	}
+
+	static bool IsWeekEnd(const clsDate &Date)
+	{
+
+		short DayOrder = DayOrderInWeek(Date._Year, Date._Month, Date._Day);
+		return (DayOrder == 6 || DayOrder == 5);
+	}
+
+	bool IsWeekEnd()
+	{
+		return IsWeekEnd(*this);
+	}
+
+	static bool IsEndOfWeek(const clsDate &Date)
+	{
+		return DayOrderInWeek(Date._Year, Date._Month, Date._Day) == 6;
+	}
+
+	bool IsEndOfWeek()
+	{
+		return IsEndOfWeek(*this);
+	}
+
+	static bool IsBusinessDay(const clsDate& Date)
+	{
+		return (!IsWeekEnd(Date));
+	}
+
+	bool IsBusinessDay()
+	{
+		return IsBusinessDay(*this);
+	}
+
+	static int DaysUntilEndOfWeek(const clsDate& Date)
+	{
+		return 6 - DayOrderInWeek(Date._Year, Date._Month, Date._Day);
+	}
+
+	int DaysUntilEndOfWeek()
+	{
+		return DaysUntilEndOfWeek(*this);
+	}
+
+	static int DaysUntilEndOfMonth(const clsDate& Date)
+	{
+		return DaysInMonth(Date._Year, Date._Month) - Date._Day;
+	}
+
+	int DaysUntilEndOfMonth()
+	{
+		return DaysUntilEndOfMonth(*this);
+	}
+
+	static int DaysUntilEndOfYear(const clsDate& Date)
+	{
+		return (DaysInYear(Date._Year) - DaysFromBeginningOfYear(Date._Year, Date._Month, Date._Day));
+	}
+
+	int DaysUntilEndOfYear()
+	{
+		return DaysUntilEndOfYear(*this);
+	}
+
+	static string ShortNameOfDay(const clsDate& Date)
+	{
+
+		string NameOfDay[] = { "Sun","Mon","Tue","Wed","Thu","Fri","Sat" };
+
+		short OrderOfDay = DayOrderInWeek(Date._Year, Date._Month, Date._Day);
+
+		return NameOfDay[OrderOfDay];
+	}
+
+	string ShortNameOfDay()
+	{
+		return ShortNameOfDay(*this);
+	}
+
+	static int CalculateVacationDays(clsDate VacationStarts, clsDate VacationEnds)
+	{
+
+		int VacationDays = 0;
+
+		while (IsDate1BeforeDate2(VacationStarts, VacationEnds))
+		{
+			if (IsBusinessDay(VacationStarts))
+				VacationDays++;
+
+			IncreaseDateByOneDay(VacationStarts);
+		}
+
+		return VacationDays;
+	}
+
+	int CalculateVacationDays(clsDate VacationEnds)
+	{
+		return CalculateVacationDays(*this, VacationEnds);
+	}
+
+
+	static clsDate CalculateVacationReturnDate(clsDate Date, const int &VacationDays)
+	{
+		int WeekEnd = 0;
+
+		while (IsWeekEnd(Date))
+		{
+			IncreaseDateByOneDay(Date);
+		}
+
+		for (int i = 0; i < VacationDays + WeekEnd; i++)
+		{
+			if (IsWeekEnd(Date))
+				WeekEnd++;
+
+			IncreaseDateByOneDay(Date);
+		}
+
+		while (IsWeekEnd(Date))
+		{
+			IncreaseDateByOneDay(Date);
+		}
+
+		return Date;
+	}
+
+	clsDate CalculateVacationReturnDate(const int &VacationDays)
+	{
+		return CalculateVacationReturnDate(*this, VacationDays);
+	}
+
+	static bool IsDate1AfterDate2(const clsDate& Date1, const clsDate& Date2)
+	{
+		return (!IsDate1BeforeDate2(Date1, Date2)) && (!IsDate1EqualDate2(Date1, Date2));
+	}
+
+	bool IsAfterDate2(const clsDate &Date2)
+	{
+		return IsDate1AfterDate2(*this, Date2);
+	}
+
+	static enDateComparison CompareTwoDates(const clsDate &Date1, const clsDate &Date2)
+	{
+		if (IsDate1BeforeDate2(Date1, Date2)) return Before;
+		if (IsDate1EqualDate2(Date1, Date2)) return Equal;
+		return After;
+	}
+
+	enDateComparison CompareToDate2(const clsDate &Date2)
+	{
+		return CompareTwoDates(*this, Date2);
 	}
 
 	short DaysInMonth()

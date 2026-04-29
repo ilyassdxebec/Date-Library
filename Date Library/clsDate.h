@@ -366,7 +366,7 @@ public:
 
 	bool IsBeforeDate2(const clsDate &Date2)
 	{
-		IsDate1BeforeDate2(*this, Date2);
+		return IsDate1BeforeDate2(*this, Date2);
 	}
 
 	static bool IsDate1EqualDate2(const clsDate& Date1, const clsDate& Date2)
@@ -376,7 +376,7 @@ public:
 
 	bool IsEqualToDate2(const clsDate &Date2)
 	{
-		IsDate1EqualDate2(*this, Date2);
+		return IsDate1EqualDate2(*this, Date2);
 	}
 
 	static bool isLastDayInMonth(const clsDate &Date)
@@ -386,7 +386,7 @@ public:
 
 	bool isLastDayInMonth()
 	{
-		isLastDayInMonth(*this);
+		return isLastDayInMonth(*this);
 	}
 
 	static bool isLastMonthInYear(const clsDate &Date)
@@ -444,7 +444,7 @@ public:
 		}
 
 		int DaysBetween = 0;
-
+		
 		while (true)
 		{
 
@@ -612,6 +612,25 @@ public:
 	enDateComparison CompareToDate2(const clsDate &Date2)
 	{
 		return CompareTwoDates(*this, Date2);
+	}
+
+	static bool IsValid(const clsDate& Date)
+	{
+		if (Date._Year < 1)
+			return false;
+
+		if (Date._Month < 1 || Date._Month>12)
+			return false;
+
+		if (Date._Day<1 || Date._Day>DaysInMonth(Date._Year, Date._Month))
+			return false;
+
+		return true;
+	}
+
+	bool IsValid()
+	{
+		return IsValid(*this);
 	}
 
 	short DaysInMonth()

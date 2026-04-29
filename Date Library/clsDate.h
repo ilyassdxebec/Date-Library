@@ -79,6 +79,16 @@ public:
 		return (isLeapYear(year)) ? 366 : 365;
 	}
 
+	static string DateToString(const clsDate &Date)
+	{
+		return to_string(Date._Day) + "/ " + to_string(Date._Month) + " / " + to_string(Date._Year) + "\n";
+	}
+
+	string DateToString()
+	{
+		return DateToString(*this);
+	}
+
 	double DaysInYear()
 	{
 		return DaysInYear(_Year);
@@ -680,7 +690,7 @@ public:
 
 	void Print()
 	{
-		cout << _Day << "/" << _Month << "/" << _Year << endl;
+		cout << DateToString();
 	}
 
 };
